@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin · Recepção Luiza & Arthur</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: "#f6f4ec",
+            sage: { 50: "#eef1e7", 100: "#dce3d0", 200: "#c3cfae", 300: "#a3b18a" },
+            olive: { DEFAULT: "#6e7a4f", dark: "#55603c", deep: "#3e472a" },
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', "Georgia", "serif"],
+            sans: ['"Montserrat"', "system-ui", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+
+<body class="font-sans min-h-screen">
+  <!-- ===================== TELA DE LOGIN ====================== -->
+  <div id="login" class="min-h-screen grid place-items-center px-5">
+    <div class="card p-8 w-full max-w-sm">
+      <h1 class="font-serif text-3xl text-olive-dark text-center">Área dos noivos</h1>
+      <p class="text-sm text-stone-500 text-center mt-1">Recepção · Luiza &amp; Arthur</p>
+      <form id="login-form" class="mt-6">
+        <label class="block text-sm font-medium text-olive-dark mb-1.5" for="password">Senha</label>
+        <input id="password" type="password" class="field" placeholder="••••••••" autocomplete="current-password" required />
+        <p id="login-error" class="hidden mt-3 text-sm text-red-600"></p>
+        <button type="submit" id="login-btn" class="btn btn-olive w-full mt-5 py-3 text-sm">
+          <span class="btn-label">Entrar</span>
+        </button>
+      </form>
+      <p id="login-mode" class="mt-4 text-center text-[11px] text-stone-400"></p>
+    </div>
+  </div>
+
+  <!-- ===================== PAINEL ====================== -->
+  <div id="panel" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <header class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div>
+        <h1 class="font-serif text-4xl text-olive-dark">Lista de presença</h1>
+        <p class="text-sm text-stone-500">Recepção · Luiza &amp; Arthur · 18/07/2026</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="refresh" class="btn btn-outline px-4 py-2.5 text-sm">Atualizar</button>
+        <button id="logout" class="btn btn-outline px-4 py-2.5 text-sm">Sair</button>
+      </div>
+    </header>
+
+    <!-- Contadores -->
+    <div class="grid grid-cols-3 gap-3 mb-7">
+      <div class="card p-5">
+        <p class="text-[11px] uppercase tracking-widest text-olive">Confirmados</p>
+        <p id="stat-yes" class="font-serif text-4xl text-olive-dark mt-1">0</p>
+        <p class="text-[11px] text-stone-400">registros</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-[11px] uppercase tracking-widest text-olive">Pessoas confirmadas</p>
+        <p id="stat-people" class="font-serif text-4xl text-olive-dark mt-1">0</p>
+        <p class="text-[11px] text-stone-400">incl. acompanhantes</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-[11px] uppercase tracking-widest text-olive">Não vão</p>
+        <p id="stat-no" class="font-serif text-4xl text-olive-dark mt-1">0</p>
+        <p class="text-[11px] text-stone-400">registros</p>
+      </div>
+    </div>
+
+    <!-- Lista -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+      <input id="search" type="text" class="field max-w-xs" placeholder="Buscar por nome..." />
+      <button id="download-csv" class="btn btn-olive px-5 py-2.5 text-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+        Baixar lista (CSV)
+      </button>
+    </div>
+    <div class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-sage-50 text-olive-dark text-left">
+            <tr>
+              <th class="px-4 py-3 font-semibold">Nome</th>
+              <th class="px-4 py-3 font-semibold">Status</th>
+              <th class="px-4 py-3 font-semibold">Acompanhantes</th>
+              <th class="px-4 py-3 font-semibold">Pessoas</th>
+              <th class="px-4 py-3 font-semibold">Enviado em</th>
+            </tr>
+          </thead>
+          <tbody id="rsvp-rows" class="divide-y divide-sage-100"></tbody>
+        </table>
+      </div>
+      <p id="rsvp-empty" class="hidden text-center text-stone-400 py-10 text-sm">Nenhuma confirmação ainda.</p>
+    </div>
+
+    <p id="demo-banner" class="hidden mt-6 text-center text-[12px] text-olive/80"></p>
+  </div>
+
+  <script src="../assets/config.js"></script>
+  <script src="../assets/api.js"></script>
+  <script src="../assets/admin.js"></script>
+</body>
+</html>

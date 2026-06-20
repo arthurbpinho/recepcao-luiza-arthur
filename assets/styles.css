@@ -1,0 +1,226 @@
+/* =====================================================================
+   Estilos e animações personalizadas (complementam o Tailwind)
+   Paleta: verde-oliva / sage / creme
+   ===================================================================== */
+
+:root {
+  --cream: #f6f4ec;
+  --olive: #6e7a4f;
+  --olive-dark: #55603c;
+  --olive-deep: #3e472a;
+  --sage: #a3b18a;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--cream);
+  color: #3a3f2f;
+  font-family: "Montserrat", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fundo decorativo sutil com leve textura/gradiente botânico */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(163, 177, 138, 0.18), transparent 38%),
+    radial-gradient(circle at 88% 92%, rgba(110, 122, 79, 0.14), transparent 42%),
+    var(--cream);
+}
+
+.font-serif { font-family: "Cormorant Garamond", Georgia, serif; }
+.font-script { font-family: "Great Vibes", cursive; }
+
+/* ----------------------------- Folhas caindo ----------------------- */
+#leaves {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.leaf {
+  position: absolute;
+  top: -8vh;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: leaf-fall;
+  animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  animation-iteration-count: infinite;
+}
+.leaf svg { display: block; filter: drop-shadow(0 2px 2px rgba(62, 71, 42, 0.08)); }
+
+@keyframes leaf-fall {
+  0%   { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 0; }
+  8%   { opacity: 0.85; }
+  35%  { transform: translate3d(28px, 30vh, 0) rotate(140deg); }
+  60%  { transform: translate3d(-26px, 56vh, 0) rotate(250deg); }
+  85%  { opacity: 0.8; }
+  100% { transform: translate3d(22px, 112vh, 0) rotate(420deg); opacity: 0; }
+}
+@keyframes leaf-fall-b {
+  0%   { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.75; }
+  40%  { transform: translate3d(-34px, 34vh, 0) rotate(-130deg); }
+  70%  { transform: translate3d(30px, 64vh, 0) rotate(-240deg); }
+  88%  { opacity: 0.7; }
+  100% { transform: translate3d(-18px, 112vh, 0) rotate(-400deg); opacity: 0; }
+}
+.leaf.alt { animation-name: leaf-fall-b; }
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf { display: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ------------------------- Animações de entrada -------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.in { opacity: 1; transform: none; }
+
+/* ------------------------------ Botões ----------------------------- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 9999px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    background-color 0.25s ease, color 0.25s ease;
+  overflow: hidden;
+}
+.btn-olive {
+  background-color: var(--olive);
+  color: #fff;
+  box-shadow: 0 8px 20px -8px rgba(85, 96, 60, 0.55);
+}
+.btn-olive:hover {
+  background-color: var(--olive-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px -10px rgba(62, 71, 42, 0.6);
+}
+.btn-olive:active { transform: translateY(0); }
+/* brilho que cruza o botão no hover */
+.btn-olive::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transform: skewX(-18deg);
+  transition: left 0.6s ease;
+}
+.btn-olive:hover::after { left: 130%; }
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--olive-dark);
+  border: 1.5px solid var(--sage);
+}
+.btn-outline:hover {
+  background-color: rgba(163, 177, 138, 0.16);
+  border-color: var(--olive);
+  transform: translateY(-2px);
+}
+
+/* --------------------------- Cards / vidro ------------------------- */
+.card {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(163, 177, 138, 0.35);
+  border-radius: 1.25rem;
+  box-shadow: 0 18px 40px -28px rgba(62, 71, 42, 0.45);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 50px -28px rgba(62, 71, 42, 0.5);
+}
+
+/* --------------------------- Formulário ---------------------------- */
+.field {
+  width: 100%;
+  border: 1px solid rgba(163, 177, 138, 0.6);
+  background: #fff;
+  border-radius: 0.85rem;
+  padding: 0.8rem 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: 0.97rem;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--olive);
+  box-shadow: 0 0 0 4px rgba(163, 177, 138, 0.25);
+}
+
+/* Cartões de opção (presença) */
+.att-card {
+  cursor: pointer;
+  border: 1.5px solid rgba(163, 177, 138, 0.6);
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  transition: all 0.25s ease;
+  height: 100%;
+}
+.att-card:hover { border-color: var(--olive); transform: translateY(-2px); }
+.peer:checked ~ .att-card {
+  border-color: var(--olive);
+  background: rgba(163, 177, 138, 0.16);
+  box-shadow: 0 0 0 3px rgba(110, 122, 79, 0.18);
+}
+.att-card .dot {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 9999px;
+  border: 2px solid var(--sage);
+  flex: none;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s ease;
+}
+.peer:checked ~ .att-card .dot { border-color: var(--olive); }
+.peer:checked ~ .att-card .dot::after {
+  content: "";
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 9999px;
+  background: var(--olive);
+}
+
+/* Divisor com folhinha */
+.leaf-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--sage);
+}
+.leaf-divider::before,
+.leaf-divider::after {
+  content: "";
+  height: 1px;
+  width: clamp(40px, 18vw, 120px);
+  background: linear-gradient(to right, transparent, var(--sage), transparent);
+}
+
+/* Linkzão de endereço */
+.link-soft { color: var(--olive-dark); text-decoration: none; border-bottom: 1px dotted var(--sage); transition: color .2s; }
+.link-soft:hover { color: var(--olive); }

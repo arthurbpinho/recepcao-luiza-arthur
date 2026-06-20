@@ -1,0 +1,11 @@
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Node / Wrangler (caso use o terminal depois)
+node_modules/
+.wrangler/
+worker/.dev.vars
+
+# Logs
+*.log

@@ -1,0 +1,23 @@
+# Configuração do Cloudflare Worker
+# Publique com:  npx wrangler deploy   (de dentro da pasta worker/)
+
+name = "casamento-rsvp"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# ---------------------------------------------------------------------
+# KV namespace onde as confirmações e recados ficam salvos.
+# Crie com:  npx wrangler kv namespace create RSVP_KV
+# e cole o "id" devolvido abaixo:
+# ---------------------------------------------------------------------
+kv_namespaces = [
+  { binding = "RSVP_KV", id = "COLE_AQUI_O_ID_DO_SEU_KV" }
+]
+
+# (Opcional) Restringe quem pode chamar a API ao domínio do seu site.
+# Deixe comentado para aceitar de qualquer origem ("*").
+# [vars]
+# ALLOWED_ORIGIN = "https://SEU-USUARIO.github.io"
+
+# A senha do admin NÃO fica aqui (seria público). Defina como segredo:
+#   npx wrangler secret put ADMIN_PASSWORD
