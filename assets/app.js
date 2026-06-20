@@ -206,21 +206,12 @@
           '<div class="text-center">' +
           '<div class="mx-auto w-16 h-16 grid place-items-center rounded-full bg-sage-100 text-olive-dark mb-4">' +
           '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7 6 4 10 4 15a8 8 0 0 0 16 0c0-5-3-9-8-13Zm0 4c3 2.7 5 5.6 5 9a5 5 0 0 1-5 5V6Z"/></svg></div>' +
-          '<h3 class="font-serif text-3xl text-olive-dark">Que pena que não poderá vir 💚</h3>' +
-          '<p class="text-sm text-stone-600 mt-3 leading-relaxed">Obrigado por nos avisar, ' +
+          '<h3 class="font-serif text-3xl text-olive-dark">Obrigado por nos avisar 💚</h3>' +
+          '<p class="text-sm text-stone-600 mt-3 leading-relaxed">Vamos sentir sua falta, ' +
           escapeHtml(name.split(" ")[0]) +
-          ". Vamos sentir sua falta! Se mudar de planos, é só voltar aqui e confirmar.</p>" +
-          '<button type="button" id="undo-rsvp" class="btn btn-outline mt-5 px-6 py-2.5 text-sm">Voltar ao formulário</button>' +
+          "! Se mais para frente você decidir que conseguirá vir, é só nos avisar " +
+          "diretamente <strong class=\"text-olive-dark\">até o dia 5 de julho</strong>. 💚</p>" +
           "</div>";
-        var undo = document.getElementById("undo-rsvp");
-        if (undo)
-          undo.addEventListener("click", function () {
-            successEl.classList.add("hidden");
-            successEl.innerHTML = "";
-            form.classList.remove("hidden");
-            submitBtn.disabled = false;
-            submitBtn.querySelector(".btn-label").textContent = "Enviar resposta";
-          });
       }
       successEl.scrollIntoView({ behavior: "smooth", block: "center" });
     }
