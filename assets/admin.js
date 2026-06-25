@@ -1,13 +1,23 @@
 /* =====================================================================
    Painel administrativo (/admin) — protegido por senha
-   - Lista de presença, contadores e download CSV
+   - Lista de presença por pessoa (a partir de guests.js), agrupada por família
+   - Status de cada convidado: Vou / Não / Pendente
+   - Contadores, busca, download CSV e seção de registros antigos
    - A senha é validada no Cloudflare Worker (modo real) ou localmente (demo)
    ===================================================================== */
 (function () {
   "use strict";
 
-  var state = { rsvps: [], password: "" };
+  var state = { statusById: {}, rsvps: [], password: "" };
   var el = function (id) { return document.getElementById(id); };
+
+  var GROUPS = (window.WEDDING_GUESTS && window.WEDDING_GUESTS.groups) || [];
+
+  function groupTitle(group) {
+    var first = group.members[0] ? group.members[0].name : "Grupo";
+    if (group.members.length <= 1) return first;
+    return first + " + " + (group.members.length - 1);
+  }
 
   /* --------------------------- Login ----------------------------- */
   function setupLogin() {
@@ -29,7 +39,7 @@
       try {
         var data = await window.WeddingAPI.fetchAdmin(pass);
         state.password = pass;
-        state.rsvps = data.rsvps || [];
+        ingest(data);
         el("login").classList.add("hidden");
         el("panel").classList.remove("hidden");
         if (data.demo) {
@@ -52,11 +62,19 @@
     });
   }
 
+  function ingest(data) {
+    state.statusById = {};
+    (data.guests || []).forEach(function (g) {
+      if (g && g.id) state.statusById[g.id] = g;
+    });
+    state.rsvps = data.rsvps || [];
+  }
+
   /* ------------------------- Recarregar -------------------------- */
   async function reload() {
     try {
       var data = await window.WeddingAPI.fetchAdmin(state.password);
-      state.rsvps = data.rsvps || [];
+      ingest(data);
       render();
     } catch (e) {
       alert("Não foi possível atualizar os dados.");
@@ -64,55 +82,108 @@
   }
 
   /* -------------------------- Render ----------------------------- */
-  function peopleCount(r) {
-    return 1 + (Array.isArray(r.guests) ? r.guests.length : 0);
+  function statusOf(memberId) {
+    var rec = state.statusById[memberId];
+    return rec && (rec.status === "yes" || rec.status === "no") ? rec.status : "pending";
   }
 
   function render() {
-    var yes = state.rsvps.filter(function (r) { return r.attending; });
-    var no = state.rsvps.filter(function (r) { return !r.attending; });
-    var people = yes.reduce(function (sum, r) { return sum + peopleCount(r); }, 0);
+    var yes = 0, no = 0, pending = 0, total = 0;
+    GROUPS.forEach(function (g) {
+      g.members.forEach(function (m) {
+        total++;
+        var s = statusOf(m.id);
+        if (s === "yes") yes++;
+        else if (s === "no") no++;
+        else pending++;
+      });
+    });
 
-    el("stat-yes").textContent = yes.length;
-    el("stat-no").textContent = no.length;
-    el("stat-people").textContent = people;
+    el("stat-yes").textContent = yes;
+    el("stat-no").textContent = no;
+    el("stat-pending").textContent = pending;
+    el("stat-total").textContent = total;
 
-    renderRows(el("search").value);
+    renderGroups(el("search").value);
+    renderLegacy();
   }
 
-  function renderRows(filter) {
-    var tbody = el("rsvp-rows");
-    var empty = el("rsvp-empty");
-    var q = (filter || "").trim().toLowerCase();
+  function statusBadge(s) {
+    if (s === "yes")
+      return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold" style="background:rgba(77,124,15,.14);color:#3f6212">✓ Vou</span>';
+    if (s === "no")
+      return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold" style="background:rgba(220,38,38,.12);color:#b91c1c">✕ Não</span>';
+    return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-500">Pendente</span>';
+  }
 
-    var rows = state.rsvps
-      .slice()
-      .sort(function (a, b) { return (a.createdAt < b.createdAt ? 1 : -1); })
-      .filter(function (r) {
-        if (!q) return true;
-        var hay = (r.name + " " + (r.guests || []).join(" ")).toLowerCase();
-        return hay.indexOf(q) !== -1;
+  function renderGroups(filter) {
+    var wrap = el("groups-list");
+    var empty = el("groups-empty");
+    var q = norm(filter);
+
+    wrap.innerHTML = "";
+    var shown = 0;
+
+    GROUPS.forEach(function (g) {
+      var match = !q || g.members.some(function (m) { return norm(m.name).indexOf(q) !== -1; });
+      if (!match) return;
+      shown++;
+
+      var gy = 0, gn = 0, gp = 0;
+      g.members.forEach(function (m) {
+        var s = statusOf(m.id);
+        if (s === "yes") gy++; else if (s === "no") gn++; else gp++;
       });
 
-    tbody.innerHTML = "";
-    if (!rows.length) {
-      empty.classList.remove("hidden");
+      var rows = g.members.map(function (m) {
+        var rec = state.statusById[m.id];
+        var s = statusOf(m.id);
+        var when = rec && rec.updatedAt ? fmtDate(rec.updatedAt) : "";
+        return (
+          '<div class="flex items-center justify-between gap-3 py-2.5">' +
+          '<span class="text-olive-dark font-medium">' + esc(m.name) + "</span>" +
+          '<div class="flex items-center gap-3">' +
+          statusBadge(s) +
+          '<span class="text-[11px] text-stone-400 whitespace-nowrap w-28 text-right">' + esc(when) + "</span>" +
+          "</div></div>"
+        );
+      }).join("");
+
+      var card = document.createElement("div");
+      card.className = "card p-5";
+      card.innerHTML =
+        '<div class="flex items-center justify-between gap-3 mb-2">' +
+        '<h3 class="font-serif text-xl text-olive-dark">' + esc(groupTitle(g)) + "</h3>" +
+        '<span class="text-[11px] text-stone-500 whitespace-nowrap">' +
+        gy + " vão · " + gn + " não · " + gp + " pend." +
+        "</span></div>" +
+        '<div class="divide-y divide-sage-100">' + rows + "</div>";
+      wrap.appendChild(card);
+    });
+
+    empty.classList.toggle("hidden", shown > 0);
+  }
+
+  function renderLegacy() {
+    var wrap = el("legacy-wrap");
+    var tbody = el("legacy-rows");
+    if (!state.rsvps.length) {
+      wrap.classList.add("hidden");
       return;
     }
-    empty.classList.add("hidden");
-
-    rows.forEach(function (r) {
-      var tr = document.createElement("tr");
-      tr.className = "hover:bg-sage-50/50";
+    wrap.classList.remove("hidden");
+    tbody.innerHTML = "";
+    state.rsvps.forEach(function (r) {
       var badge = r.attending
         ? '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold bg-sage-100 text-olive-dark">Confirmado</span>'
         : '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-500">Não vai</span>';
+      var tr = document.createElement("tr");
+      tr.className = "hover:bg-sage-50/50";
       tr.innerHTML =
         '<td class="px-4 py-3 font-medium text-olive-dark">' + esc(r.name) + "</td>" +
         '<td class="px-4 py-3">' + badge + "</td>" +
         '<td class="px-4 py-3 text-stone-600">' +
         (r.guests && r.guests.length ? esc(r.guests.join(", ")) : "—") + "</td>" +
-        '<td class="px-4 py-3 text-stone-600">' + peopleCount(r) + "</td>" +
         '<td class="px-4 py-3 text-stone-500 whitespace-nowrap">' + fmtDate(r.createdAt) + "</td>";
       tbody.appendChild(tr);
     });
@@ -125,23 +196,26 @@
     return v;
   }
 
-  function exportRsvps() {
-    var rows = state.rsvps
-      .slice()
-      .sort(function (a, b) { return (a.createdAt < b.createdAt ? 1 : -1); })
-      .map(function (r) {
-        return [
-          r.name,
-          r.attending ? "Confirmado" : "Não vai",
-          (r.guests || []).join(", "),
-          peopleCount(r),
-          fmtDate(r.createdAt),
-        ];
-      });
+  function statusLabel(s) {
+    return s === "yes" ? "Vou" : s === "no" ? "Não vai" : "Pendente";
+  }
 
-    var header = ["Nome", "Status", "Acompanhantes", "Total de pessoas", "Enviado em"];
+  function exportCsv() {
+    var header = ["Nome", "Grupo", "Status", "Atualizado em"];
     var lines = [header.join(";")];
-    rows.forEach(function (cols) { lines.push(cols.map(csvEscape).join(";")); });
+    GROUPS.forEach(function (g) {
+      var title = groupTitle(g);
+      g.members.forEach(function (m) {
+        var rec = state.statusById[m.id];
+        var s = statusOf(m.id);
+        lines.push([
+          m.name,
+          title,
+          statusLabel(s),
+          rec && rec.updatedAt ? fmtDate(rec.updatedAt) : "",
+        ].map(csvEscape).join(";"));
+      });
+    });
 
     // BOM para o Excel reconhecer acentos
     var blob = new Blob(["﻿" + lines.join("\r\n")], {
@@ -163,6 +237,9 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  function norm(s) {
+    return String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+  }
   function fmtDate(iso) {
     if (!iso) return "—";
     var d = new Date(iso);
@@ -178,7 +255,7 @@
     setupLogin();
     el("refresh").addEventListener("click", reload);
     el("logout").addEventListener("click", function () { location.reload(); });
-    el("download-csv").addEventListener("click", exportRsvps);
-    el("search").addEventListener("input", function () { renderRows(this.value); });
+    el("download-csv").addEventListener("click", exportCsv);
+    el("search").addEventListener("input", function () { renderGroups(this.value); });
   });
 })();

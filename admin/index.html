@@ -64,54 +64,67 @@
     </header>
 
     <!-- Contadores -->
-    <div class="grid grid-cols-3 gap-3 mb-7">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7">
       <div class="card p-5">
         <p class="text-[11px] uppercase tracking-widest text-olive">Confirmados</p>
         <p id="stat-yes" class="font-serif text-4xl text-olive-dark mt-1">0</p>
-        <p class="text-[11px] text-stone-400">registros</p>
-      </div>
-      <div class="card p-5">
-        <p class="text-[11px] uppercase tracking-widest text-olive">Pessoas confirmadas</p>
-        <p id="stat-people" class="font-serif text-4xl text-olive-dark mt-1">0</p>
-        <p class="text-[11px] text-stone-400">incl. acompanhantes</p>
+        <p class="text-[11px] text-stone-400">vão comparecer</p>
       </div>
       <div class="card p-5">
         <p class="text-[11px] uppercase tracking-widest text-olive">Não vão</p>
         <p id="stat-no" class="font-serif text-4xl text-olive-dark mt-1">0</p>
-        <p class="text-[11px] text-stone-400">registros</p>
+        <p class="text-[11px] text-stone-400">recusaram</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-[11px] uppercase tracking-widest text-olive">Pendentes</p>
+        <p id="stat-pending" class="font-serif text-4xl text-olive-dark mt-1">0</p>
+        <p class="text-[11px] text-stone-400">sem resposta</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-[11px] uppercase tracking-widest text-olive">Convidados</p>
+        <p id="stat-total" class="font-serif text-4xl text-olive-dark mt-1">0</p>
+        <p class="text-[11px] text-stone-400">pessoas na lista</p>
       </div>
     </div>
 
     <!-- Lista -->
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
       <input id="search" type="text" class="field max-w-xs" placeholder="Buscar por nome..." />
       <button id="download-csv" class="btn btn-olive px-5 py-2.5 text-sm">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
         Baixar lista (CSV)
       </button>
     </div>
-    <div class="card overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-sage-50 text-olive-dark text-left">
-            <tr>
-              <th class="px-4 py-3 font-semibold">Nome</th>
-              <th class="px-4 py-3 font-semibold">Status</th>
-              <th class="px-4 py-3 font-semibold">Acompanhantes</th>
-              <th class="px-4 py-3 font-semibold">Pessoas</th>
-              <th class="px-4 py-3 font-semibold">Enviado em</th>
-            </tr>
-          </thead>
-          <tbody id="rsvp-rows" class="divide-y divide-sage-100"></tbody>
-        </table>
+
+    <div id="groups-list" class="space-y-4"></div>
+    <p id="groups-empty" class="hidden text-center text-stone-400 py-10 text-sm">Nenhum convidado encontrado.</p>
+
+    <!-- Registros antigos (texto livre), se houver -->
+    <div id="legacy-wrap" class="hidden mt-10">
+      <h2 class="font-serif text-2xl text-olive-dark mb-1">Confirmações antigas (texto livre)</h2>
+      <p class="text-sm text-stone-500 mb-3">Enviadas no formato anterior, antes da lista de nomes.</p>
+      <div class="card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-sage-50 text-olive-dark text-left">
+              <tr>
+                <th class="px-4 py-3 font-semibold">Nome</th>
+                <th class="px-4 py-3 font-semibold">Status</th>
+                <th class="px-4 py-3 font-semibold">Acompanhantes</th>
+                <th class="px-4 py-3 font-semibold">Enviado em</th>
+              </tr>
+            </thead>
+            <tbody id="legacy-rows" class="divide-y divide-sage-100"></tbody>
+          </table>
+        </div>
       </div>
-      <p id="rsvp-empty" class="hidden text-center text-stone-400 py-10 text-sm">Nenhuma confirmação ainda.</p>
     </div>
 
     <p id="demo-banner" class="hidden mt-6 text-center text-[12px] text-olive/80"></p>
   </div>
 
   <script src="../assets/config.js"></script>
+  <script src="../assets/guests.js"></script>
   <script src="../assets/api.js"></script>
   <script src="../assets/admin.js"></script>
 </body>

@@ -7,11 +7,12 @@ nos botões. As respostas e os recados são guardados em um **Cloudflare Worker 
 
 ```
 .
-├── index.html              ← página principal (convite + formulário + recados)
+├── index.html              ← página principal (convite + lista de nomes p/ confirmar)
 ├── admin/index.html        ← área dos noivos (acesse digitando /admin), com senha
 ├── assets/
 │   ├── foto.jpg            ← foto dos noivos (versão otimizada p/ web, ~270 KB)
 │   ├── config.js           ← VOCÊ EDITA AQUI (URL do Worker + senha do modo demo)
+│   ├── guests.js           ← LISTA DE CONVIDADOS (grupos/famílias e seus membros)
 │   ├── api.js              ← cliente (fala com o Worker ou usa modo demo)
 │   ├── styles.css          ← animações (folhas, hovers, cards)
 │   ├── app.js              ← lógica da página principal
@@ -132,14 +133,26 @@ senha que você definiu no passo 3 (`ADMIN_PASSWORD`).
 
 ---
 
+## Como o convidado confirma
+
+- Em vez de digitar o nome, o convidado **encontra o próprio nome** numa lista em
+  ordem alfabética (com busca) — assim ninguém inclui quem não estava convidado.
+- Ao escolher o nome, abre a **lista do grupo/família** dele, com **Vou** (✓ verde)
+  e **Não posso** (✕ vermelho) para cada pessoa.
+- Pode confirmar só a si ou também os outros do mesmo grupo. Se outra pessoa do
+  grupo entrar depois, vê o que já foi marcado e pode **alterar até 5 de julho**.
+
 ## Como funciona a área `/admin`
 
 - Acesse digitando `/admin` no final do endereço (sem botão no site, como pedido).
 - Pede a **senha** — validada no Worker (no modo demo, a senha do `config.js`).
-- Mostra: total de **confirmados**, **pessoas confirmadas** (incluindo
-  acompanhantes) e **quem não vai**.
+- Mostra os contadores: **confirmados**, **não vão**, **pendentes** (sem resposta)
+  e o **total de convidados** da lista.
+- A lista aparece **agrupada por família/grupo**, com o status de cada pessoa.
 - **Baixar lista (CSV)** abre direto no Excel/Google Planilhas (com acentos).
 - Há busca por nome para encontrar um convidado rapidamente.
+- Confirmações enviadas no formato antigo (texto livre), se existirem, aparecem
+  numa seção separada no fim da página.
 
 ## Detalhes já configurados
 - **Data no Google Agenda:** 18/07/2026, 19h (cerimônia), recepção logo após.
@@ -149,6 +162,11 @@ senha que você definiu no passo 3 (`ADMIN_PASSWORD`).
 - Aviso de convite **individual e intransferível** + **lista na portaria**.
 
 ## Manutenção
+- **Editar a lista de convidados:** abra `assets/guests.js`. Cada `group` é uma
+  família/círculo que confirma junto; cada `member` tem um `id` **estável** e um
+  `name`. Para corrigir um nome, troque só o `name`. Para adicionar um grupo novo,
+  use um `id` de grupo inédito (ex.: `g66`) e membros `g66-1`, `g66-2`, … **Não
+  reaproveite ids antigos** — eles ligam o nome às confirmações já enviadas.
 - **Trocar a foto** dos noivos: substitua `assets/foto.jpg`. Para otimizar uma
   foto nova (deixar leve para celular), rode na raiz do projeto:
   ```bash

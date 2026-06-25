@@ -205,6 +205,74 @@ body::before {
   background: var(--olive);
 }
 
+/* ------------------- Lista de nomes (escolha) ---------------------- */
+.guest-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.8rem 1rem;
+  background: #fff;
+  color: var(--olive-dark);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+.guest-item:hover { background: rgba(163, 177, 138, 0.16); }
+.guest-item .chev { color: var(--sage); flex: none; }
+.guest-item:hover .chev { color: var(--olive); }
+
+/* ---------------- Confirmação por pessoa (Vou / Não) --------------- */
+.member-row {
+  border: 1px solid rgba(163, 177, 138, 0.5);
+  border-radius: 1rem;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.75);
+}
+.att-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  border-radius: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1.5px solid rgba(163, 177, 138, 0.6);
+  background: #fff;
+  color: #7a7f72;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.att-toggle:hover { border-color: var(--olive); transform: translateY(-1px); }
+.att-toggle .ic {
+  display: grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 9999px;
+  border: 2px solid currentColor;
+  font-size: 0.78rem;
+  line-height: 1;
+}
+.att-toggle.yes .ic { color: #4d7c0f; }       /* V verde */
+.att-toggle.no .ic { color: #dc2626; }        /* X vermelho */
+.att-toggle.yes.selected {
+  background: rgba(77, 124, 15, 0.12);
+  border-color: #4d7c0f;
+  color: #3f6212;
+  box-shadow: 0 0 0 3px rgba(77, 124, 15, 0.15);
+}
+.att-toggle.no.selected {
+  background: rgba(220, 38, 38, 0.09);
+  border-color: #dc2626;
+  color: #b91c1c;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.13);
+}
+
 /* Divisor com folhinha */
 .leaf-divider {
   display: flex;

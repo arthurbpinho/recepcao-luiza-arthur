@@ -11,7 +11,7 @@ compatibility_date = "2024-11-01"
 # e cole o "id" devolvido abaixo:
 # ---------------------------------------------------------------------
 kv_namespaces = [
-  { binding = "RSVP_KV", id = "COLE_AQUI_O_ID_DO_SEU_KV" }
+  { binding = "RSVP_KV", id = "c0b1ac66decf4d1a9fc69009b76dba27" }
 ]
 
 # (Opcional) Restringe quem pode chamar a API ao domínio do seu site.
