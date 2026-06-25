@@ -292,3 +292,24 @@ body::before {
 /* Linkzão de endereço */
 .link-soft { color: var(--olive-dark); text-decoration: none; border-bottom: 1px dotted var(--sage); transition: color .2s; }
 .link-soft:hover { color: var(--olive); }
+
+/* ------------------- Filtros do painel (admin) --------------------- */
+.filter-pill {
+  border-radius: 9999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--olive-dark);
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.filter-pill:hover { background: rgba(163, 177, 138, 0.22); }
+.filter-pill.is-active {
+  background: var(--olive);
+  color: #fff;
+  box-shadow: 0 6px 14px -8px rgba(85, 96, 60, 0.6);
+}
+.filter-pill .pill-n { font-weight: 700; opacity: 0.55; margin-left: 0.1rem; }
+.filter-pill.is-active .pill-n { opacity: 0.85; }

@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  var state = { statusById: {}, rsvps: [], password: "" };
+  var state = { statusById: {}, rsvps: [], password: "", filter: "all", sort: "default" };
   var el = function (id) { return document.getElementById(id); };
 
   var GROUPS = (window.WEDDING_GUESTS && window.WEDDING_GUESTS.groups) || [];
@@ -104,8 +104,18 @@
     el("stat-pending").textContent = pending;
     el("stat-total").textContent = total;
 
-    renderGroups(el("search").value);
+    setPillCount("all", total);
+    setPillCount("yes", yes);
+    setPillCount("no", no);
+    setPillCount("pending", pending);
+
+    renderGroups();
     renderLegacy();
+  }
+
+  function setPillCount(key, n) {
+    var span = document.querySelector('#status-filter .pill-n[data-count="' + key + '"]');
+    if (span) span.textContent = n;
   }
 
   function statusBadge(s) {
@@ -116,26 +126,40 @@
     return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-500">Pendente</span>';
   }
 
-  function renderGroups(filter) {
+  function renderGroups() {
     var wrap = el("groups-list");
     var empty = el("groups-empty");
-    var q = norm(filter);
+    var q = norm(el("search").value);
+    var filter = state.filter;
 
     wrap.innerHTML = "";
-    var shown = 0;
 
+    // Monta a lista de grupos visíveis aplicando filtro de status e busca
+    var visible = [];
     GROUPS.forEach(function (g) {
-      var match = !q || g.members.some(function (m) { return norm(m.name).indexOf(q) !== -1; });
-      if (!match) return;
-      shown++;
+      // membros que passam no filtro de status (todos, vão, não, pendentes)
+      var members = filter === "all"
+        ? g.members.slice()
+        : g.members.filter(function (m) { return statusOf(m.id) === filter; });
+      if (!members.length) return;
 
+      // busca: mantém o grupo se algum dos membros visíveis casa com o texto
+      if (q && !members.some(function (m) { return norm(m.name).indexOf(q) !== -1; })) return;
+
+      // contagem do grupo (sempre sobre o grupo inteiro, para dar contexto)
       var gy = 0, gn = 0, gp = 0;
       g.members.forEach(function (m) {
         var s = statusOf(m.id);
         if (s === "yes") gy++; else if (s === "no") gn++; else gp++;
       });
 
-      var rows = g.members.map(function (m) {
+      visible.push({ group: g, members: members, gy: gy, gn: gn, gp: gp });
+    });
+
+    sortVisible(visible);
+
+    visible.forEach(function (v) {
+      var rows = v.members.map(function (m) {
         var rec = state.statusById[m.id];
         var s = statusOf(m.id);
         var when = rec && rec.updatedAt ? fmtDate(rec.updatedAt) : "";
@@ -153,15 +177,29 @@
       card.className = "card p-5";
       card.innerHTML =
         '<div class="flex items-center justify-between gap-3 mb-2">' +
-        '<h3 class="font-serif text-xl text-olive-dark">' + esc(groupTitle(g)) + "</h3>" +
+        '<h3 class="font-serif text-xl text-olive-dark">' + esc(groupTitle(v.group)) + "</h3>" +
         '<span class="text-[11px] text-stone-500 whitespace-nowrap">' +
-        gy + " vão · " + gn + " não · " + gp + " pend." +
+        v.gy + " vão · " + v.gn + " não · " + v.gp + " pend." +
         "</span></div>" +
         '<div class="divide-y divide-sage-100">' + rows + "</div>";
       wrap.appendChild(card);
     });
 
-    empty.classList.toggle("hidden", shown > 0);
+    empty.classList.toggle("hidden", visible.length > 0);
+  }
+
+  // Ordena a lista de grupos visíveis conforme a opção escolhida.
+  // O Array.sort é estável, então empates preservam a ordem original da lista.
+  function sortVisible(arr) {
+    if (state.sort === "confirmed") {
+      arr.sort(function (a, b) { return b.gy - a.gy; });
+    } else if (state.sort === "pending") {
+      arr.sort(function (a, b) { return b.gp - a.gp; });
+    } else if (state.sort === "name") {
+      arr.sort(function (a, b) {
+        return groupTitle(a.group).localeCompare(groupTitle(b.group), "pt-BR");
+      });
+    }
   }
 
   function renderLegacy() {
@@ -256,6 +294,24 @@
     el("refresh").addEventListener("click", reload);
     el("logout").addEventListener("click", function () { location.reload(); });
     el("download-csv").addEventListener("click", exportCsv);
-    el("search").addEventListener("input", function () { renderGroups(this.value); });
+    el("search").addEventListener("input", renderGroups);
+
+    // Filtro por status (Todos / Vão / Não vão / Pendentes)
+    var pills = document.querySelectorAll("#status-filter .filter-pill");
+    Array.prototype.forEach.call(pills, function (btn) {
+      btn.addEventListener("click", function () {
+        state.filter = btn.getAttribute("data-filter");
+        Array.prototype.forEach.call(pills, function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        renderGroups();
+      });
+    });
+
+    // Ordenação
+    el("sort-by").addEventListener("change", function () {
+      state.sort = this.value;
+      renderGroups();
+    });
   });
 })();

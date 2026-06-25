@@ -87,13 +87,35 @@
       </div>
     </div>
 
-    <!-- Lista -->
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-      <input id="search" type="text" class="field max-w-xs" placeholder="Buscar por nome..." />
-      <button id="download-csv" class="btn btn-olive px-5 py-2.5 text-sm">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
-        Baixar lista (CSV)
-      </button>
+    <!-- Busca + filtros + ordenação -->
+    <div class="space-y-3 mb-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <input id="search" type="text" class="field max-w-xs" placeholder="Buscar por nome..." />
+        <button id="download-csv" class="btn btn-olive px-5 py-2.5 text-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
+          Baixar lista (CSV)
+        </button>
+      </div>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] uppercase tracking-widest text-olive">Mostrar</span>
+          <div id="status-filter" class="inline-flex flex-wrap items-center rounded-full bg-sage-50 p-1 gap-1">
+            <button type="button" class="filter-pill is-active" data-filter="all">Todos <span class="pill-n" data-count="all">0</span></button>
+            <button type="button" class="filter-pill" data-filter="yes">Vão <span class="pill-n" data-count="yes">0</span></button>
+            <button type="button" class="filter-pill" data-filter="no">Não vão <span class="pill-n" data-count="no">0</span></button>
+            <button type="button" class="filter-pill" data-filter="pending">Pendentes <span class="pill-n" data-count="pending">0</span></button>
+          </div>
+        </div>
+        <label class="flex items-center gap-2">
+          <span class="text-[11px] uppercase tracking-widest text-olive">Ordenar</span>
+          <select id="sort-by" class="field w-auto py-2 text-sm">
+            <option value="default">Ordem da lista</option>
+            <option value="confirmed">Mais confirmados</option>
+            <option value="pending">Mais pendentes</option>
+            <option value="name">Nome (A–Z)</option>
+          </select>
+        </label>
+      </div>
     </div>
 
     <div id="groups-list" class="space-y-4"></div>
