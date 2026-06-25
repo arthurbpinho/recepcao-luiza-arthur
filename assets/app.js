@@ -122,6 +122,7 @@
     var searchEl = document.getElementById("guest-search");
     var listEl = document.getElementById("guest-list");
     var noneEl = document.getElementById("guest-none");
+    var hintEl = document.getElementById("guest-hint");
     var backBtn = document.getElementById("group-back");
     var membersEl = document.getElementById("group-members");
     var errorEl = document.getElementById("group-error");
@@ -141,11 +142,22 @@
     /* -------------------- Passo 1: lista de nomes ---------------- */
     function renderList() {
       var q = norm(searchEl.value);
-      var items = data.flat.filter(function (p) {
-        return !q || norm(p.name).indexOf(q) !== -1;
-      });
       listEl.innerHTML = "";
+
+      // Enquanto nada foi digitado, mostra só a dica (sem a lista inteira)
+      if (!q) {
+        listEl.classList.add("hidden");
+        noneEl.classList.add("hidden");
+        if (hintEl) hintEl.classList.remove("hidden");
+        return;
+      }
+      if (hintEl) hintEl.classList.add("hidden");
+
+      var items = data.flat.filter(function (p) {
+        return norm(p.name).indexOf(q) !== -1;
+      });
       if (!items.length) {
+        listEl.classList.add("hidden");
         noneEl.classList.remove("hidden");
         return;
       }
@@ -165,6 +177,7 @@
         frag.appendChild(li);
       });
       listEl.appendChild(frag);
+      listEl.classList.remove("hidden");
     }
 
     /* -------------- Passo 2: confirmar pessoas do grupo ---------- */
@@ -246,6 +259,8 @@
 
     function backToList() {
       currentGroup = null;
+      searchEl.value = "";
+      renderList(); // volta ao estado inicial (só a dica, sem a lista)
       groupWrap.classList.add("hidden");
       pickWrap.classList.remove("hidden");
       pickWrap.scrollIntoView({ behavior: "smooth", block: "center" });
