@@ -9,7 +9,7 @@
    Para EDITAR a lista: altere os nomes/membros abaixo mantendo os ids.
    Para ADICIONAR um grupo novo: use um id de grupo inédito (ex.: g66)
    e ids de membro no formato g66-1, g66-2, ...
-   65 grupos · 164 pessoas
+   65 grupos · 165 pessoas
    ===================================================================== */
 window.WEDDING_GUESTS = {
   "groups": [
@@ -311,6 +311,10 @@ window.WEDDING_GUESTS = {
         {
           "id": "g21-3",
           "name": "Davi Martuchello"
+        },
+        {
+          "id": "g21-4",
+          "name": "Rebeca Martuchello"
         }
       ]
     },
