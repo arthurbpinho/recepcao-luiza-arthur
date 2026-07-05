@@ -9,7 +9,7 @@
    Para EDITAR a lista: altere os nomes/membros abaixo mantendo os ids.
    Para ADICIONAR um grupo novo: use um id de grupo inédito (ex.: g66)
    e ids de membro no formato g66-1, g66-2, ...
-   66 grupos · 167 pessoas
+   75 grupos · 186 pessoas
    ===================================================================== */
 window.WEDDING_GUESTS = {
   "groups": [
@@ -1008,6 +1008,127 @@ window.WEDDING_GUESTS = {
         {
           "id": "g66-1",
           "name": "Catarina Teixeira"
+        }
+      ]
+    },
+    {
+      "id": "g67",
+      "members": [
+        {
+          "id": "g67-1",
+          "name": "Guilherme Santos"
+        },
+        {
+          "id": "g67-2",
+          "name": "Stefany Reis"
+        }
+      ]
+    },
+    {
+      "id": "g68",
+      "members": [
+        {
+          "id": "g68-1",
+          "name": "Nilson Cunha"
+        },
+        {
+          "id": "g68-2",
+          "name": "Suelen Miranda"
+        }
+      ]
+    },
+    {
+      "id": "g69",
+      "members": [
+        {
+          "id": "g69-1",
+          "name": "Gabriel Lucas"
+        },
+        {
+          "id": "g69-2",
+          "name": "Kamilla Lucas"
+        },
+        {
+          "id": "g69-3",
+          "name": "Fred Lucas"
+        }
+      ]
+    },
+    {
+      "id": "g70",
+      "members": [
+        {
+          "id": "g70-1",
+          "name": "Letícia Canhestro"
+        }
+      ]
+    },
+    {
+      "id": "g71",
+      "members": [
+        {
+          "id": "g71-1",
+          "name": "Letícia Macedo"
+        },
+        {
+          "id": "g71-2",
+          "name": "Paulo Bittencourt"
+        }
+      ]
+    },
+    {
+      "id": "g72",
+      "members": [
+        {
+          "id": "g72-1",
+          "name": "Ronan Abreu"
+        }
+      ]
+    },
+    {
+      "id": "g73",
+      "members": [
+        {
+          "id": "g73-1",
+          "name": "Vinícius Starlino"
+        }
+      ]
+    },
+    {
+      "id": "g74",
+      "members": [
+        {
+          "id": "g74-1",
+          "name": "Daniel Dominguete"
+        },
+        {
+          "id": "g74-2",
+          "name": "Laura Dominguete"
+        },
+        {
+          "id": "g74-3",
+          "name": "Davi Dominguete"
+        }
+      ]
+    },
+    {
+      "id": "g75",
+      "members": [
+        {
+          "id": "g75-1",
+          "name": "Tereza Morais"
+        },
+        {
+          "id": "g75-2",
+          "name": "Junior Morais"
+        },
+        {
+          "id": "g75-3",
+          "name": "Gustavo Morais"
+        },
+        {
+          "id": "g75-4",
+          "name": "Júlia Morais"
         }
       ]
     }
